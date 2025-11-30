@@ -1,14 +1,47 @@
-import { Container, Typography, Button, Box, TextField } from '@mui/material'
+import { Container, Typography, Button, Box, TextField, Alert } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-
+import { useState } from 'react'
+import { useDispatch} from 'react-redux'
+import { authActions } from '../store/authSlice';
 export default function Login() {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Aquí podrías validar los datos del formulario si quisieras
-    navigate('/home') // Redirige a la página de inicio
+  
+  const USER_OK = "danielolivahernandez@gmail.com"
+  const PASS_OK = "mondongo"
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const [error, setError] = useState(false)
+
+ const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    const resp = await fetch(`http://localhost:3030/login?user=${email}&password=${password}`);
+    const json = await resp.json();
+
+    // json.data es un array (vacío o con usuario)
+    if (json.data && json.data.length > 0) {
+      const usuarioBD = json.data[0];
+
+      dispatch(authActions.login({
+        name: usuarioBD.nombre,
+        rol: usuarioBD.rol
+      }));
+
+      setError(false);
+      navigate('/home');
+    } else {
+      setError(true);
+    }
+  } catch (err) {
+    console.error('Error conectando al backend', err);
+    setError(true);
   }
+};
 
   return (
     <Container component="main" maxWidth="sm" sx={{ mt: 6 }}>
@@ -20,15 +53,24 @@ export default function Login() {
         Acceso de usuario
       </Typography>
 
+      {/* Mostrar alerta si hay error */}
+      {error && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          Usuario y/o contraseña incorrectos
+        </Alert>
+      )}
+
       <Box component="form" noValidate onSubmit={handleLogin} aria-label="formulario de login" sx={{ mt: 3 }}>
         <TextField
           required
           fullWidth
           id="email"
-          label="Correo electrónico"
+          label="Usuario"
           name="email"
           autoComplete="email"
           margin="normal"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <TextField
@@ -40,6 +82,8 @@ export default function Login() {
           id="password"
           autoComplete="current-password"
           margin="normal"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
