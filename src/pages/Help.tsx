@@ -1,5 +1,5 @@
 // src/pages/Help.tsx
-import Menu from '../components/menu';
+import Menu from '../components/Menu';
 import { Container, Typography } from '@mui/material';
 
 export default function Help() {

@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store';
 
 interface ItemType {
   id?: number;
@@ -21,9 +23,11 @@ const itemInitialState: ItemType = {
 export default function Dashboard() {
   const [item, setItem] = useState<ItemType>(itemInitialState);
   const [tableData, setTableData] = useState<ItemType[]>([]);
+  const userRol = useSelector((state: RootState) => state.authenticator.userRol);
 
   useEffect(() => {
     getItems();
+   
   }, []);
 
   const getItems = async () => {
@@ -100,7 +104,9 @@ export default function Dashboard() {
             {tableData.map(row => (
               <TableRow key={row.id}>
                 <TableCell>
-                  <Button onClick={() => handleDelete(row.id)}><DeleteForeverIcon /></Button>
+                  {userRol === 'admin' ? (
+                    <Button onClick={() => handleDelete(row.id)}><DeleteForeverIcon /></Button>
+                  ) : null}
                 </TableCell>
                 <TableCell>{row.nombre}</TableCell>
                 <TableCell>{row.marca}</TableCell>
