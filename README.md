@@ -1,1 +1,1 @@
-Daniel Oliva Hernández
+En esta rama he añadido tooltips para todos los botones explicando lo que hace cada uno ademas de hacer que el apartado de help te lleve a el pdf del manual de uso el cual esta dentro del a carpeta public del frontend
